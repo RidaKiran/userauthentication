@@ -1,9 +1,9 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards, Request } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SigninDto } from './dto/signin-dto';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { AuthGuard, Public } from 'src/guards/auth.guard';
+import { AuthGuard, Public } from 'src/auth/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -16,23 +16,16 @@ export class AuthController {
     return this.authService.signIn(signinDto);
   }
 
-  // @Public()
-  // @HttpCode(HttpStatus.CREATED)
-  // @Post('register')
-  // register(@Body() CreateUserDto: CreateUserDto): Promise<Partial<UserEntity>> {
-  //   return this.authService.register(CreateUserDto);
-  // }
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
-  register(@Body() CreateUserDto: CreateUserDto): Promise<Partial<UserEntity>> {
-    return this.authService.register(CreateUserDto);
+  register(@Body() createUserDto: CreateUserDto): Promise<Partial<UserEntity>> {
+    return this.authService.register(createUserDto);
   }
 
-
- // @UseGuards(AuthGuard)
-  // @Public()
   @Get('profile')
+  // @UseGuards(AuthGuard)
   getProfile(@Request() req) {
     return req.user;
   }
+
 }

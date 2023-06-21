@@ -7,23 +7,26 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private userService: UserService, private readonly jwtService: JwtService) {}
+  constructor(
+    private userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async signIn(signinDto: SigninDto): Promise<any> {
-    const { username, password: pass } = signinDto;
+    const { username, password } = signinDto;
     const user = await this.userService.findOne(username);
-    if (user?.password !== pass) {
-      throw new UnauthorizedException();
+    if (!user || user.password !== password) {
+      throw new UnauthorizedException('Invalid username or password');
     }
-    const { password, ...result } = user;
+    const { id, firstname } = user;
 
-    const payload = { id: user.id, username: user.firstname };
+    const payload = { id, username: firstname };
     const accessToken = await this.jwtService.signAsync(payload, {
-      secret: "hello",
-      expiresIn: "5m"
+      secret: 'hello',
+      expiresIn: '5m',
     });
     const refreshToken = await this.jwtService.signAsync(payload, {
-      secret: "hello-world",
+      secret: 'hello-world',
       expiresIn: '7d',
     });
 
