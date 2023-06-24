@@ -6,11 +6,18 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class AuthService {
-  constructor(
-    private userService: UserService,
-    private readonly jwtService: JwtService,
-  ) {}
+// export class AuthService {
+  // constructor(
+  //   private userService: UserService,
+  //   private readonly jwtService: JwtService,
+  // ) {}
+  export class AuthService {
+    private revokedTokens: string[] = [];
+  
+    constructor(
+      private userService: UserService,
+      private readonly jwtService: JwtService,
+    ) {}
 
   async signIn(signinDto: SigninDto): Promise<any> {
     const { username, password } = signinDto;
@@ -38,4 +45,18 @@ export class AuthService {
     const { password, ...result } = user;
     return result;
   }
+
+  async signOut(token: string): Promise<void> {
+    this.revokeToken(token); // Revoke the token
+    // Additional cleanup tasks or logic...
+  }
+
+  private revokeToken(token: string): void {
+    this.revokedTokens.push(token); // Add the token to the revoked tokens list
+  }
+
+  isTokenRevoked(token: string): boolean {
+    return this.revokedTokens.includes(token); // Check if the token is revoked
+  }
 }
+
